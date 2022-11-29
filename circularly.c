@@ -9,7 +9,6 @@ void delete_pos();
 
 struct node 
 {
-    struct node* prev;
     int data;
     struct node* next;
 };
@@ -75,20 +74,18 @@ void create()
     scanf("%d", &n);
     if(start == NULL) 
     {
-        temp -> next = start;
-        temp -> prev = NULL;
         start = temp;
+        start -> next = start;
     }
     else 
     {
         ptr = start;
-        while (ptr -> next != NULL)
+        while (ptr -> next != start)
         {
             ptr = ptr -> next;
         }
         ptr -> next = temp;
-        temp -> prev = ptr;
-        temp -> next = NULL;
+        temp -> next = start;
     }
     for (i = 0; i < n; i++)
     {
@@ -109,20 +106,18 @@ void insert_end()
     scanf("%d", &temp->data);
     if(start == NULL) 
     {
-        temp -> next = start;
-        temp -> prev = NULL;
         start = temp;
+        start -> next = start;
     }
     else 
     {
         ptr = start;
-        while (ptr -> next != NULL)
+        while (ptr -> next != start)
         {
             ptr = ptr -> next;
         }
         ptr -> next = temp;
-        temp -> prev = ptr;
-        temp -> next = NULL;
+        temp -> next = start;
     }
 }
 
@@ -139,11 +134,12 @@ void display()
     {
         ptr = start;
         printf("\nThe List elements are : \n");
-        while (ptr != NULL)
+        while (ptr -> next != start)
         {
             printf(" %d ", ptr->data);
             ptr = ptr->next;
         }
+        printf(" %d ", ptr -> data);
     }
 }
 
@@ -161,28 +157,20 @@ void insert_pos()
     scanf("%d", &pos);
     printf("Enter the data value for the node : ");
     scanf("%d", &temp->data);
-
+    ptr = start;
     if (pos == 0)
     {
-        temp -> prev = NULL;
-        temp  -> next = start;
         start = temp;
+        start -> next = start;
     }
     else
     {
-        for (i = 0, ptr = start; i < pos - 1; i++)
+        for (i = 0; i < pos - 1; i++)
         {
-            ptr = ptr->next;
-            if (ptr == NULL)
-            {
-                printf("Position not found\n");
-                return;
-            }
+            ptr = ptr -> next; 
         }
-        temp -> next = ptr -> next;
-        ptr -> next -> prev = temp;
+	    temp -> next = ptr -> next;
         ptr -> next = temp;
-        temp -> prev = ptr;
     }
 }
 
@@ -190,6 +178,7 @@ void delete_pos()
 {
     int i, pos;
     struct node *temp, *ptr;
+    ptr = start;
     if (start == NULL)
     {
         printf("The list is Empty\n");
@@ -200,27 +189,31 @@ void delete_pos()
         scanf("%d", &pos);
         if (pos == 0)
         {
-            ptr = start;
-            start = start->next;
-            start -> prev = NULL;
+            while(ptr->next!=start)
+            {
+		        ptr=ptr->next;
+	        }
+            ptr -> next = start -> next;
+            temp = start;
+            start = start -> next;
             printf("The deleted element is : %d", ptr->data);
             free(ptr);
         }
         else
         {
-            ptr = start;
+            struct node *preptr;
+            ptr = preptr = start;
             for (i = 0; i < pos; i++)
             {
-                temp = ptr;
-                ptr = ptr->next;
+                preptr = ptr;
+                ptr = ptr -> next;
                 if (ptr == NULL)
                 {
                     printf("Position not found\n");
                     return;
                 }
             }
-            ptr -> next -> prev = temp;
-            temp -> next = ptr -> next;
+            preptr -> next = ptr -> next;
             printf("The deleted element is : %d", ptr -> data);
             free(ptr);
         }
